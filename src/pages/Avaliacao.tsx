@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Image, FlatList } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Image, FlatList, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -11,6 +11,7 @@ export default function Avaliacao({ route, navigation }) {
     const [rating, setRating] = useState(0);
     const [recommend, setRecommend] = useState(false);
     const [reviews, setReviews] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const fetchReviews = async () => {
         try {
@@ -31,6 +32,8 @@ export default function Avaliacao({ route, navigation }) {
             return;
         }
 
+
+        setLoading(true);
         try {
             const response = await axios.post('http://192.168.1.103:3000/evaluations', {
                 productId,
@@ -47,6 +50,8 @@ export default function Avaliacao({ route, navigation }) {
         } catch (error) {
             console.error('Erro ao enviar avaliação: ', error);
             alert('Erro ao enviar avaliação');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -112,8 +117,12 @@ export default function Avaliacao({ route, navigation }) {
                             <Button title={recommend ? "Sim" : "Não"} onPress={() => setRecommend(!recommend)} />
                         </View>
 
-                        <TouchableOpacity style={styles.submitButton} onPress={submitEvaluation}>
-                            <Text style={styles.submitButtonText}>Enviar Feedback</Text>
+                        <TouchableOpacity style={styles.submitButton} onPress={submitEvaluation} disabled={loading}>
+                            {loading ? (
+                                <ActivityIndicator color="#fff" />
+                            ) : (
+                                <Text style={styles.submitButtonText}>Enviar Feedback</Text>
+                            )}
                         </TouchableOpacity>
 
                         <Text style={styles.title}>Últimas Avaliações</Text>

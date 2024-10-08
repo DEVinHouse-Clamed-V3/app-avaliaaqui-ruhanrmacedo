@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Button, StyleSheet, Text, View, Image, TouchableOpacity, FlatList } from 'react-native';
+import { Button, StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function Home({ navigation }) {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchProductReviews = async (productId) => {
     try {
@@ -16,7 +17,7 @@ export default function Home({ navigation }) {
         const averageRating = reviews.reduce((sum, review) => sum + review.experience === 'Ruim' ? 1 : review.experience === 'Médio' ? 2 : 3, 0) / reviews.length;
         return averageRating;
       }
-      return 0; 
+      return 0;
     } catch (error) {
       console.error('Erro ao buscar avaliações: ', error);
       return 0;
@@ -24,15 +25,18 @@ export default function Home({ navigation }) {
   };
 
   const fetchData = async () => {
+    setLoading(true);
     try {
       const response = await axios.get('http://192.168.1.103:3000/products');
       const productsWithRating = await Promise.all(response.data.map(async (product) => {
         const averageRating = await fetchProductReviews(product.id);
         return { ...product, averageRating };
       }));
-      setProducts(productsWithRating); 
+      setProducts(productsWithRating);
     } catch (error) {
       console.error('Erro ao buscar produtos: ', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,7 +61,7 @@ export default function Home({ navigation }) {
     return stars;
   };
 
-  const renderProducts = ({ item }) => { 
+  const renderProducts = ({ item }) => {
     return (
       <View style={styles.productCard}>
         <Image source={{ uri: item.image }} style={styles.productImage} />
@@ -73,7 +77,7 @@ export default function Home({ navigation }) {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('Avaliacao', { 
+            onPress={() => navigation.navigate('Avaliacao', {
               productId: item.id,
               productName: item.name,
               productImage: item.image
@@ -88,11 +92,15 @@ export default function Home({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={products} 
-        keyExtractor={(item) => item.id.toString()} 
-        renderItem={renderProducts} 
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#e60000" />
+      ) : (
+        <FlatList
+          data={products}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderProducts}
+        />
+      )}
     </View>
   );
 }
