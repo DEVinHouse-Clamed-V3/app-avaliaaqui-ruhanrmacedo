@@ -31,28 +31,31 @@ export default function Avaliacao({ route, navigation }) {
             alert('Preencha todos os campos');
             return;
         }
-
-
-        setLoading(true);
-        try {
-            const response = await axios.post('http://192.168.1.103:3000/evaluations', {
-                productId,
-                name,
-                email,
-                feedback,
-                experience: rating === 1 ? 'Ruim' : rating === 2 ? 'Médio' : 'Bom',
-                recommend,
-            });
-            console.log(response.data);
-            alert('Avaliação enviada com sucesso!');
-            fetchReviews();
-            navigation.goBack();
-        } catch (error) {
-            console.error('Erro ao enviar avaliação: ', error);
-            alert('Erro ao enviar avaliação');
-        } finally {
-            setLoading(false);
-        }
+    
+        setLoading(true); 
+    
+        
+        setTimeout(async () => {
+            try {
+                const response = await axios.post('http://192.168.1.103:3000/evaluations', {
+                    productId,
+                    name,
+                    email,
+                    feedback,
+                    experience: rating === 1 ? 'Ruim' : rating === 2 ? 'Médio' : 'Bom',
+                    recommend,
+                });
+                console.log(response.data);
+                alert('Avaliação enviada com sucesso!');
+                fetchReviews();
+                navigation.goBack();
+            } catch (error) {
+                console.error('Erro ao enviar avaliação: ', error);
+                alert('Erro ao enviar avaliação');
+            } finally {
+                setLoading(false); 
+            }
+        }, 3000); 
     };
 
     const renderStars = () => {
