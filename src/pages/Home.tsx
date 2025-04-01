@@ -25,20 +25,23 @@ export default function Home({ navigation }) {
   };
 
   const fetchData = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get('http://192.168.1.103:3000/products');
-      const productsWithRating = await Promise.all(response.data.map(async (product) => {
-        const averageRating = await fetchProductReviews(product.id);
-        return { ...product, averageRating };
-      }));
-      setProducts(productsWithRating);
-    } catch (error) {
-      console.error('Erro ao buscar produtos: ', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setLoading(true); 
+    
+    setTimeout(async () => {
+        try {
+            const response = await axios.get('http://192.168.1.103:3000/products');
+            const productsWithRating = await Promise.all(response.data.map(async (product) => {
+                const averageRating = await fetchProductReviews(product.id);
+                return { ...product, averageRating };
+            }));
+            setProducts(productsWithRating);
+        } catch (error) {
+            console.error('Erro ao buscar produtos: ', error);
+        } finally {
+            setLoading(false); 
+        }
+    }, 3000);
+};
 
   useFocusEffect(
     React.useCallback(() => {
