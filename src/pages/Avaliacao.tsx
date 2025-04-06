@@ -15,7 +15,7 @@ export default function Avaliacao({ route, navigation }) {
 
     const fetchReviews = async () => {
         try {
-            const response = await axios.get(`http://192.168.1.103:3000/evaluations?productId=${productId}`);
+            const response = await axios.get(`http://192.168.1.5:3000/evaluations?productId=${productId}`);
             setReviews(response.data);
         } catch (error) {
             console.error('Erro ao buscar avaliações: ', error);
@@ -37,7 +37,7 @@ export default function Avaliacao({ route, navigation }) {
         
         setTimeout(async () => {
             try {
-                const response = await axios.post('http://192.168.1.103:3000/evaluations', {
+                const response = await axios.post('http://192.168.1.5:3000/evaluations', {
                     productId,
                     name,
                     email,
